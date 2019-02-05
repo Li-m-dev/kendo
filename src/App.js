@@ -36,7 +36,7 @@ class App extends Component {
           <Column field="Description" title='Food'/>
           <Column field="Measure" title='Amount'/>
           <Column field="Protein(g)Per Measure" title='Food'/>
-          <Column field="Carbohydrate, by difference(g) Per Measure" title='Food'/>
+          <Column field="Carbohydrate, by difference(g)Per Measure" title='Sugar'/>
         </Grid>
       </div>
       </div>
