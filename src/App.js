@@ -3,8 +3,10 @@ import { Button } from '@progress/kendo-react-buttons';
 import { NumericTextBox } from '@progress/kendo-react-inputs';
 import { DropDownList } from '@progress/kendo-react-dropdowns';
 import { Grid, GridColumn as Column } from '@progress/kendo-react-grid';
+import { Chart } from '@progress/kendo-charts-react-wrapper';
 import { filterBy } from '@progress/kendo-data-query';
 import '@progress/kendo-theme-default/dist/all.css';
+import '@progress/kendo-ui';
 import './App.css';
 
 import nutrition from './nutrition.json';
@@ -34,9 +36,14 @@ class App extends Component {
       'Eat Something Healthy',
       '1 Hour of Reading',
       '10 Minutes of Meditation'
-    ]
+    ],
+    series: [{data: [1, 1, 1]}],
+    seriesDefaults: {type: 'pie'},
+    graphProtein: 0,
+    graphCarb: 0,
+    graphSugar: 0
   }
-}
+};
 
   getNutrition = (filter) => filterBy(nutrition, filter);
 
@@ -62,10 +69,35 @@ class App extends Component {
   }
 
   handleFilterChange = (e) => {
-    console.log(e)
     this.setState({
       data: this.getNutrition(e.filter),
       filter: e.filter
+    })
+  }
+  
+  handleProteinChange = (e) => {
+    this.setState({graphProtein: e.target.value});
+    this.handleGraphChange();
+  }
+  handleCarbChange = (e) => {
+    console.log(e.target.value)
+    this.setState({graphCarb: e.target.value});
+    this.handleGraphChange();
+  }
+  handleSugarChange = (e) => {
+    this.setState({graphSugar: e.target.value});
+    this.handleGraphChange();
+  }
+
+  handleGraphChange = () => {
+    this.setState({
+      series: [{
+        data: [
+          this.state.graphProtein,
+          this.state.graphCarb,
+          this.state.graphSugar
+        ]
+      }]
     })
   }
   render() {
@@ -116,6 +148,26 @@ class App extends Component {
           <Column field="Protein(g)Per Measure" title='Food'/>
           <Column field="Carbohydrate, by difference(g)Per Measure" title='Sugar'/>
         </Grid>
+      </div>
+      <div className='food-graph-inputs'>
+      <p>Protein Amount:-
+        <input type="text"
+          onChange={this.handleProteinChange}/>
+      </p>
+      <p>Carb Amount:- 
+        <input type="text"
+          onChange={this.handleCarbChange}/>
+      </p>
+      <p>Sugar Amount:- 
+        <input type="text"
+          onChange={this.handleSugarChange}/>
+      </p>
+      </div>
+      <div className='food-graph'>
+        <Chart
+          seriesDefaults={this.state.seriesDefaults}
+          series={this.state.series}
+        />
       </div>
       </div>
     );
