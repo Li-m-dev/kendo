@@ -3,15 +3,26 @@ import { Button } from '@progress/kendo-react-buttons';
 import { NumericTextBox } from '@progress/kendo-react-inputs';
 import { DropDownList } from '@progress/kendo-react-dropdowns';
 import { Grid, GridColumn as Column } from '@progress/kendo-react-grid';
+import { filterBy } from '@progress/kendo-data-query';
 import '@progress/kendo-theme-default/dist/all.css';
-import logo from './logo.svg';
 import './App.css';
 
 import nutrition from './nutrition.json';
 
 class App extends Component {
-  state = {
-    data: nutrition,
+  constructor(props){
+    super(props);
+    const initialFilter = {
+      logic: 'and',
+      filters: [{
+        field: 'Description',
+        operator: 'contains',
+        value: 'Apple'
+      }]
+    }
+  this.state = {
+    data: this.getNutrition(initialFilter),
+    filter: initialFilter,
     habitId: 0,
     habitName: '',
     habitIteration: 0,
@@ -25,6 +36,9 @@ class App extends Component {
       '10 Minutes of Meditation'
     ]
   }
+}
+
+  getNutrition = (filter) => filterBy(nutrition, filter);
 
   handleNameChange = (e) => {
     this.setState({
@@ -44,6 +58,14 @@ class App extends Component {
         iterations: this.state.habitIteration
       }]), 
       habitId: this.state.habitId + 1
+    })
+  }
+
+  handleFilterChange = (e) => {
+    console.log(e)
+    this.setState({
+      data: this.getNutrition(e.filter),
+      filter: e.filter
     })
   }
   render() {
@@ -82,7 +104,13 @@ class App extends Component {
         <Button primary={true} onClick={this.handleAddHabit}>Add Habit</Button>
       </div>
       <div className="nutrition-grid">
-        <Grid data={this.state.data}>
+        <Grid 
+          data={this.state.data}
+          style={{maxHeight:'500px'}}
+          filterable={true}
+          filter={this.state.filter}
+          onFilterChange={this.handleFilterChange}
+        >
           <Column field="Description" title='Food'/>
           <Column field="Measure" title='Amount'/>
           <Column field="Protein(g)Per Measure" title='Food'/>
